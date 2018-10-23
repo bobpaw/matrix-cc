@@ -123,6 +123,28 @@ namespace matrix {
 			}
 			return ret;
 		}
+
+		template <typename type>
+		Matrix<T> operator* (const type &rhs) const {
+			Matrix<T> ret(rows_, cols_);
+			for (decltype(rows_) y = 0; y < rows_; ++y) {
+				for (decltype(cols_) x = 0; x < rows_; ++x) {
+					ret.at(x, y) = at(x, y) * rhs;
+				}
+			}
+			return ret;
+		}
+
+		template <typename type>
+		Matrix<T> operator* (const type &lhs, const Matrix<T> &rhs) const {
+			Matrix<T> ret(rhs.rows_, rhs.cols_);
+			for (decltype(rhs.rows_) y = 0; y < rhs.rows_; ++y) {
+				for (decltype(cols_) x = 0; x < rows_; ++x) {
+					ret.at(x, y) = at(x, y) * rhs;
+				}
+			}
+			return ret;
+		}
 	};
 
 	auto I (int x) {
