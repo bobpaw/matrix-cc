@@ -23,7 +23,11 @@ namespace matrix {
 		}
 	};
 
-	template<typename T = int>
+	template<typename T = int> class Matrix;
+	template <typename> struct isMatrix : public std::false_type {};
+	template <typename T> struct isMatrix<Matrix<T>> : public std::true_type {};
+
+	template<typename T>
 	class Matrix {
 		std::vector<std::vector<T>> data;
 		std::size_t rows_, cols_;
@@ -135,16 +139,7 @@ namespace matrix {
 			return ret;
 		}
 
-		template <typename type>
-		Matrix<T> operator* (const type &lhs, const Matrix<T> &rhs) const {
-			Matrix<T> ret(rhs.rows_, rhs.cols_);
-			for (decltype(rhs.rows_) y = 0; y < rhs.rows_; ++y) {
-				for (decltype(cols_) x = 0; x < rows_; ++x) {
-					ret.at(x, y) = at(x, y) * rhs;
-				}
-			}
-			return ret;
-		}
+		template <typename type, typename matrix_type> friend typename std::enable_if<!isMatrix<type>::value, Matrix<matrix_type>>::type operator* (const type &lhs, const Matrix<matrix_type> &rhs);
 	};
 
 	auto I (int x) {
@@ -176,4 +171,14 @@ namespace matrix {
 		return stream;
 	}
 
+	template <typename type, typename matrix_type>
+	typename std::enable_if<!isMatrix<type>::value, Matrix<matrix_type>>::type operator* (const type &lhs, const Matrix<matrix_type> &rhs) {
+		Matrix<matrix_type> ret(rhs.rows_, rhs.cols_);
+		for (decltype(rhs.rows_) y = 0; y < rhs.rows_; ++y) {
+			for (decltype(rhs.cols_) x = 0; x < rhs.rows_; ++x) {
+				ret.at(x, y) = lhs * rhs.at(x, y);
+			}
+		}
+		return ret;
+	}
 } // namespace
