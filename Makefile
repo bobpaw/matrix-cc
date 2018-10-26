@@ -1,10 +1,11 @@
 CC = g++
 MAKE_CFLAGS = -g -Wall -Wextra -pedantic
 
-ALL: main
+PROGS=container matrix separate
+ALL: $(PROGS)
 
-%: %.cc
+%: %.cc %.h
 	$(CC) $(MAKE_CFLAGS) $(CFLAGS) $< -o $@
 
 clean:
-	rm main
+	rm -f $(PROGS)
