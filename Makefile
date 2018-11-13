@@ -1,7 +1,7 @@
 CC = g++
 MAKE_CFLAGS = -g -Wall -Wextra -pedantic
 
-PROGS=container matrix separate
+PROGS=container matrix separate main
 ALL: $(PROGS)
 
 %: %.cc %.h
