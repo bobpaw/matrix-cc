@@ -11,6 +11,12 @@ namespace matrix {
 		}
 	};
 
+	struct MatrixAddError : std::exception {
+		const char *what (void) const noexcept {
+			return "Matrix addition error.";
+		}
+	};
+
 	struct MatrixError : std::exception {
 		const char *what (void) const noexcept {
 			return "Column number was not uniform";
@@ -128,6 +134,18 @@ namespace matrix {
 			return ret;
 		}
 
+		template <class type>
+		typename std::enable_if<std::is_arithmetic<type>::value, Matrix<type>>::type operator+ (const Matrix<type> &rhs) const {
+			if (cols_ != rhs.cols_ && rows_ != rhs.rows_) throw MatrixAddError();
+			Matrix<type> ret(rows_, cols_);
+			for (decltype(ret.rows_) y = 0; y < ret.rows_; ++y) {
+				for (decltype(ret.cols_) x = 0; x < ret.cols_; ++x) {
+					ret.at(x, y) = at(x, y) + rhs.at(x, y);
+				}
+			}
+			return ret;
+		}
+
 		template <typename type>
 		Matrix<T> operator* (const type &rhs) const {
 			Matrix<T> ret(rows_, cols_);
@@ -139,7 +157,19 @@ namespace matrix {
 			return ret;
 		}
 
+		template <typename type>
+		Matrix<T> operator+ (const type &rhs) const {
+			Matrix<T> ret(rows_, cols_);
+			for (decltype(rows_) y = 0; y < rows_; ++y) {
+				for (decltype(cols_) x = 0; x < rows_; ++x) {
+					ret.at(x, y) = at(x, y) + rhs;
+				}
+			}
+			return ret;
+		}
+
 		template <typename type, typename matrix_type> friend typename std::enable_if<!isMatrix<type>::value, Matrix<matrix_type>>::type operator* (const type &lhs, const Matrix<matrix_type> &rhs);
+		template <typename type, typename matrix_type> friend typename std::enable_if<!isMatrix<type>::value, Matrix<matrix_type>>::type operator+ (const type &lhs, const Matrix<matrix_type> &rhs);
 	};
 
 	auto I (int x) {
@@ -181,4 +211,16 @@ namespace matrix {
 		}
 		return ret;
 	}
+
+	template <typename type, typename matrix_type>
+	typename std::enable_if<!isMatrix<type>::value, Matrix<matrix_type>>::type operator+ (const type &lhs, const Matrix<matrix_type> &rhs) {
+		Matrix<matrix_type> ret(rhs.rows_, rhs.cols_);
+		for (decltype(rhs.rows_) y = 0; y < rhs.rows_; ++y) {
+			for (decltype(rhs.cols_) x = 0; x < rhs.rows_; ++x) {
+				ret.at(x, y) = lhs + rhs.at(x, y);
+			}
+		}
+		return ret;
+	}
+
 } // namespace
