@@ -3,7 +3,7 @@
 #include "container.h"
 
 int main (int argc, char *argv[]) {
-std::string line;
+	std::string line;
 	try {
 	while (true) {
 	  std::cout << "> " << std::flush;

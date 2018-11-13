@@ -6,19 +6,21 @@
 namespace container {
   class TextHolder {
   private:
-		std::remove_const<decltype(std::string::npos)>::type begin, end;
-		bool bigness_;
-		std::string str_;
+		std::remove_const<decltype(std::string::npos)>::type begin, end; // Beginning in str_ init string
+		bool bigness_; // Is is the largest
+		std::string str_; // String initially passed
 	protected:
-		std::vector<TextHolder> children_;
-		std::string quotes_;
-		std::vector<std::string> items_;
-		std::string item_;
+		std::vector<TextHolder> children_; // Children vector
+		std::string quotes_; // Two character string
+		std::vector<std::string> items_; // List of all items
+		std::string item_; // Concatenated items
+		std::size_t num_; // Number of items
 	public:
 		decltype(items_) &items (void) { return items_; }
 		std::string &item (std::string::size_type n) { return items_[n]; }
 		decltype(item_) &item (void) { return item_; }
 		decltype(bigness_) bigness (void) const { return bigness_; }
+		decltype(num_) num (void) const { return num_; }
 
 		TextHolder () : TextHolder("") {}
 		TextHolder (const std::string &init, std::string quotestr = "()", std::string::size_type find = 0, bool big = true) : bigness_(big), quotes_(quotestr) {
@@ -65,6 +67,11 @@ namespace container {
 				str_ = init;
 			}
 			for (auto i : items_) item_.append(i);
+			if (!bigness_) {
+				num_ = children_.size();
+			} else {
+				num_ = children_[0].children_.size();
+			}
 		}
 
 		TextHolder &operator[] (std::vector<TextHolder>::size_type n) {
